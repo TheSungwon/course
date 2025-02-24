@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "noUncheckedIndexedAccess": true, //배열 타입스크립트 에러 방지 예: const arr = [1, 2, 3]; arr[4] // Error
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
