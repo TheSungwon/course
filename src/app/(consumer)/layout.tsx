@@ -1,4 +1,6 @@
 import { Button } from "@/components/ui/button";
+import { canAccessAdminPages } from "@/permissions/general";
+import { getCurrentUser } from "@/services/clerk";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { ReactNode, Suspense } from "react";
@@ -26,12 +28,7 @@ function Navbar() {
         </Link>
         <Suspense fallback={<div>Loading...</div>}>
           <SignedIn>
-            <Link
-              className="hover:bg-accent/10 flex items-center px-2"
-              href="/admin"
-            >
-              Admin
-            </Link>
+            <AdminLink />
             <Link
               className="hover:bg-accent/10 flex items-center px-2"
               href="/courses"
@@ -62,12 +59,23 @@ function Navbar() {
         <Suspense fallback={<div>Loading...</div>}>
           <SignedOut>
             <Button className="self-center" asChild>
-              <SignInButton>Sign In</SignInButton>
+              <SignInButton>로그인</SignInButton>
             </Button>
           </SignedOut>
           {/* 로그인 안했을 때만 보임 */}
         </Suspense>
       </nav>
     </header>
+  );
+}
+
+async function AdminLink() {
+  const user = await getCurrentUser();
+  if (!canAccessAdminPages(user)) return null;
+
+  return (
+    <Link className="hover:bg-accent/10 flex items-center px-2" href="/admin">
+      Admin
+    </Link>
   );
 }
