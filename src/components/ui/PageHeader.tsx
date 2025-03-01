@@ -10,7 +10,7 @@ export function PageHeader({
   children?: ReactNode;
   className?: string;
 }) {
-  console.log(children, "\n---------");
+  // console.log(children, "\n---------");
   return (
     <div
       className={cn("mb-8 flex gap-4 items-center justify-between", className)}

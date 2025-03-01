@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { CourseForm } from "@/features/courses/components/CourseForm";
+
 import Link from "next/link";
 
 export default function NewCoursesPage() {
