@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/services/clerk";
 import { z } from "zod";
 import { canCreateCourses, canDeleteCourses } from "../permissions/courses";
-import { insertCourse } from "../db/courses";
+import { insertCourse, deleteCourse as deleteCrouseDB } from "../db/courses";
 
 interface Course {
   id: string;
@@ -27,12 +27,20 @@ export async function createCourse(unsafeData: z.infer<typeof courseSchema>) {
 
   redirect(`/admin/courses/${course.id}edit`);
 }
+
+// function wait(number: number) {
+//   console.log("wait ------------features/courses/actions/courses");
+//   return new Promise((res) => setTimeout(res, number));
+// }
+
 export async function deleteCourse(id: string) {
+  // await wait(2000);
+
   if (!canDeleteCourses(await getCurrentUser())) {
     return { error: true, message: "There was an error deleting your course" };
   }
 
-  await deleteCourse(id);
+  await deleteCrouseDB(id);
   console.log("delete course ------------features/courses/actions/courses");
   return { error: false, message: "Successfully deleted course" };
 }

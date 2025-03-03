@@ -4,6 +4,16 @@ import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Loader2Icon } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog";
+import { AlertDialogFooter, AlertDialogHeader } from "./ui/alert-dialog";
 
 export function ActionButton({
   action,
@@ -19,8 +29,36 @@ export function ActionButton({
     function performAction() {
       startTransition(async () => {
         const data = await action();
-        toast(data.message);
+        toast(data.message, {
+          icon: data.error ? "❌" : "✔️",
+          style: { backgroundColor: "black", color: "white" },
+        });
       });
+    }
+    if (requireAreYouSure) {
+      return (
+        <AlertDialog open={isLoading ? true : undefined}>
+          <AlertDialogTrigger asChild>
+            <Button {...props} />
+          </AlertDialogTrigger>
+
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction disabled={isLoading} onClick={performAction}>
+                <LoadingTextSwap isLoading={isLoading}>Yes</LoadingTextSwap>
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      );
     }
 
     return (

@@ -13,7 +13,18 @@ import { Trash2Icon } from "lucide-react";
 import Link from "next/link";
 import { deleteCourse } from "../actions/courses";
 
-export function CourseTable({ courses }: { courses: any[] }) {
+export function CourseTable({
+  courses,
+}: {
+  courses: {
+    id: string;
+    name: string;
+    description: string;
+    sectionsCount: number;
+    lessonsCount: number;
+    studentsCount: number;
+  }[];
+}) {
   return (
     <Table>
       <TableHeader>
@@ -54,7 +65,11 @@ export function CourseTable({ courses }: { courses: any[] }) {
                 <Button asChild>
                   <Link href={`/admin/courses/${course.id}/edit`}>Edit</Link>
                 </Button>
-                <ActionButton action={deleteCourse.bind(null, course.id)}>
+                <ActionButton
+                  variant="destructiveOutline"
+                  requireAreYouSure
+                  action={deleteCourse.bind(null, course.id)}
+                >
                   <Trash2Icon />
                   <span className="sr-only">Delete</span>
                 </ActionButton>
