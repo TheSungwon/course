@@ -25,7 +25,7 @@ export async function createCourse(unsafeData: z.infer<typeof courseSchema>) {
   const course = await insertCourse(data as Course);
   console.log(course, "------------features/courses/actions/courses");
 
-  redirect(`/admin/courses/${course.id}edit`);
+  redirect(`/admin/courses/${course.id}/edit`);
 }
 
 // function wait(number: number) {
