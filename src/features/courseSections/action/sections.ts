@@ -1,46 +1,32 @@
 "use server";
 
-import { courseSchema } from "../schemas/courses";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/services/clerk";
 import { z } from "zod";
-import {
-  canCreateCourses,
-  canDeleteCourses,
-  canUpdateCourses,
-} from "../permissions/courses";
-import {
-  insertCourse,
-  deleteCourse as deleteCrouseDB,
-  updateCourseDB,
-} from "../db/courses";
+import { sectionSchema } from "../schemas/section";
+import { canCreateCourseSections } from "../permissions/sections";
+import { insertSection } from "../db/sections";
 
-interface Course {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+export async function createCourse(
+  courseId: string,
+  unsafeData: z.infer<typeof sectionSchema>
+) {
+  const { success, data } = sectionSchema.safeParse(unsafeData);
 
-export async function createCourse(unsafeData: z.infer<typeof courseSchema>) {
-  const { success, data } = courseSchema.safeParse(unsafeData);
-
-  if (!success || !canCreateCourses(await getCurrentUser())) {
+  if (!success || !canCreateCourseSections(await getCurrentUser())) {
     return { error: true, message: "There was an error creating your course" };
   }
 
-  const course = await insertCourse(data as Course);
-  console.log(course, "------------features/courses/actions/courses");
+  await insertSection({ ...data, courseId });
 
-  redirect(`/admin/courses/${course.id}/edit`);
+  return { error: false, message: "section 성공" };
 }
 
 export async function updateCourse(
   id: string,
-  unsafeData: z.infer<typeof courseSchema>
+  unsafeData: z.infer<typeof sectionSchema>
 ) {
-  const { success, data } = courseSchema.safeParse(unsafeData);
+  const { success, data } = sectionSchema.safeParse(unsafeData);
 
   if (!success || !canUpdateCourses(await getCurrentUser())) {
     return { error: true, message: "There was an error updating your course" };
