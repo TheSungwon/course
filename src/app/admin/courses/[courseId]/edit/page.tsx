@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DialogTrigger } from "@/components/ui/dialog";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,12 +8,13 @@ import { CourseSectionTable, CourseTable, LessonTable } from "@/drizzle/schema";
 import { CourseForm } from "@/features/courses/components/CourseForm";
 import { getCourseIdTag } from "@/features/courses/db/cache/courses";
 import { getCourseSectionCourseTag } from "@/features/courseSections/db/cache";
-import { SectionFormDialog } from "@/features/courseSections/db/components/SectionFormDialog";
+import { SectionFormDialog } from "@/features/courseSections/components/SectionFormDialog";
 import { getLessonCourseTag } from "@/features/lessons/db/cache/lessons";
 import { asc, eq } from "drizzle-orm";
 import { PlusIcon } from "lucide-react";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { notFound } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export default async function EditCoursePage({
   params,
@@ -21,9 +22,7 @@ export default async function EditCoursePage({
   params: Promise<{ courseId: string }>;
 }) {
   const { courseId } = await params;
-  console.log(courseId);
   const course = await getCourse(courseId);
-  console.log(course, "------------EditCoursePage");
 
   if (course == null) return notFound();
 
@@ -49,6 +48,23 @@ export default async function EditCoursePage({
                 </DialogTrigger>
               </SectionFormDialog>
             </CardHeader>
+            <CardContent>
+              {course.courseSections.map((section) => (
+                <div className="flex items-center gap-1" key={section.id}>
+                  <div
+                    className={cn(
+                      "contents",
+                      section.status === "private" && "text-muted-foreground"
+                    )}
+                  >
+                    <div className="size-4 my-4">
+                      {section.status === "private" ? "🔐" : "🔓"}
+                    </div>
+                    <div className="">{section.name}</div>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
           </Card>
         </TabsContent>
         <TabsContent value="details">

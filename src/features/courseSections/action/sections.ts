@@ -1,56 +1,67 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/services/clerk";
 import { z } from "zod";
 import { sectionSchema } from "../schemas/section";
-import { canCreateCourseSections } from "../permissions/sections";
-import { insertSection } from "../db/sections";
+import {
+  canCreateCourseSections,
+  canDeleteCourseSections,
+  canUpdateCourseSections,
+} from "../permissions/sections";
+import {
+  getNextCourseSectionOrder,
+  insertSection,
+  updateSection as updateSectionDB,
+  deleteSection as deleteSectionDB,
+} from "../db/sections";
 
-export async function createCourse(
+export async function createSection(
   courseId: string,
   unsafeData: z.infer<typeof sectionSchema>
 ) {
   const { success, data } = sectionSchema.safeParse(unsafeData);
 
+  console.log(
+    !success,
+    !canCreateCourseSections(await getCurrentUser()),
+    !success || !canCreateCourseSections(await getCurrentUser()),
+    "canCreateCourseSections"
+  );
   if (!success || !canCreateCourseSections(await getCurrentUser())) {
-    return { error: true, message: "There was an error creating your course" };
+    return {
+      error: true,
+      message: "There was an error creating your section 생성 실패",
+    };
   }
 
-  await insertSection({ ...data, courseId });
+  const order = await getNextCourseSectionOrder(courseId);
+
+  await insertSection({ ...data, courseId, order });
 
   return { error: false, message: "section 성공" };
 }
 
-export async function updateCourse(
+export async function updateSection(
   id: string,
   unsafeData: z.infer<typeof sectionSchema>
 ) {
   const { success, data } = sectionSchema.safeParse(unsafeData);
 
-  if (!success || !canUpdateCourses(await getCurrentUser())) {
-    return { error: true, message: "There was an error updating your course" };
+  if (!success || !canUpdateCourseSections(await getCurrentUser())) {
+    return { error: true, message: "There was an error updating your section" };
   }
 
-  await updateCourseDB(id, data as Course);
-  console.log("update course ------------features/courses/actions/courses");
-  return { error: false, message: "Successfully updated course" };
-  // redirect(`/admin/courses/${course.id}/edit`);
+  await updateSectionDB(id, data);
+  console.log("update section ------------features/sections/actions/sections");
+  return { error: false, message: "Successfully updated section" };
 }
 
-// function wait(number: number) {
-//   console.log("wait ------------features/courses/actions/courses");
-//   return new Promise((res) => setTimeout(res, number));
-// }
-
-export async function deleteCourse(id: string) {
-  // await wait(2000);
-
-  if (!canDeleteCourses(await getCurrentUser())) {
-    return { error: true, message: "There was an error deleting your course" };
+export async function deleteSection(id: string) {
+  if (!canDeleteCourseSections(await getCurrentUser())) {
+    return { error: true, message: "There was an error deleting your section" };
   }
 
-  await deleteCrouseDB(id);
-  console.log("delete course ------------features/courses/actions/courses");
-  return { error: false, message: "Successfully deleted course" };
+  await deleteSectionDB(id);
+  console.log("delete section ------------features/sections/actions/sections");
+  return { error: false, message: "Successfully deleted section" };
 }

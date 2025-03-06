@@ -7,7 +7,7 @@ export async function getCurrentUser() {
   const { userId, sessionClaims, redirectToSignIn } = await auth();
 
   //   console.log("getCurrentUser", userId, sessionClaims, redirectToSignIn);
-
+  redirectToSignIn();
   return {
     clerkUserId: userId,
     role: sessionClaims?.role,

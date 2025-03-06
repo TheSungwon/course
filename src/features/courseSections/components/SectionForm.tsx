@@ -2,7 +2,6 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { courseSchema } from "../schemas/courses";
 import { z } from "zod";
 import {
   Form,
@@ -14,12 +13,10 @@ import {
 } from "@/components/ui/form";
 import { RequiredLabelIcon } from "@/components/ui/RequiredLabelIcon";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { createCourse, updateCourse } from "../actions/courses";
 import { toast } from "sonner";
 import { CourseSectionStatus, courseSectionStatuses } from "@/drizzle/schema";
-import { sectionSchema } from "../../schemas/section";
+import { sectionSchema } from "../schemas/section";
 import {
   Select,
   SelectContent,
@@ -27,10 +24,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { createSection, updateSection } from "../action/sections";
 
 export function SectionForm({
   section,
   courseId,
+  onSuccess,
 }: {
   courseId: string;
   section?: {
@@ -38,6 +37,7 @@ export function SectionForm({
     name: string;
     status: CourseSectionStatus;
   };
+  onSuccess?: () => void;
 }) {
   const form = useForm<z.infer<typeof sectionSchema>>({
     resolver: zodResolver(sectionSchema),
@@ -47,7 +47,17 @@ export function SectionForm({
     },
   });
 
-  async function onSubmit(values: z.infer<typeof sectionSchema>) {}
+  async function onSubmit(values: z.infer<typeof sectionSchema>) {
+    const action =
+      section == null
+        ? createSection.bind(null, courseId)
+        : updateSection.bind(null, section.id);
+
+    const data = await action(values);
+    toast.error(data.message);
+
+    if (!data.error) onSuccess?.();
+  }
 
   return (
     <Form {...form}>

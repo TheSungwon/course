@@ -11,7 +11,7 @@ import {
 } from "../permissions/courses";
 import {
   insertCourse,
-  deleteCourse as deleteCrouseDB,
+  deleteCourse as deleteCourseDB,
   updateCourseDB,
 } from "../db/courses";
 
@@ -64,7 +64,7 @@ export async function deleteCourse(id: string) {
     return { error: true, message: "There was an error deleting your course" };
   }
 
-  await deleteCrouseDB(id);
+  await deleteCourseDB(id);
   console.log("delete course ------------features/courses/actions/courses");
   return { error: false, message: "Successfully deleted course" };
 }

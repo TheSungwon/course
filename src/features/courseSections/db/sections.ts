@@ -1,12 +1,71 @@
+import { db } from "@/drizzle/db";
 import { CourseSectionTable } from "@/drizzle/schema";
+import { eq } from "drizzle-orm";
+import { revalidateCourseSectionCache } from "./cache";
+
+export async function getNextCourseSectionOrder(courseId: string) {
+  const section = await db.query.CourseSectionTable.findFirst({
+    columns: { order: true },
+    where: ({ courseId: courseIdCol }, { eq }) => eq(courseIdCol, courseId),
+    orderBy: ({ order }, { desc }) => desc(order),
+  });
+
+  return section ? section.order + 1 : 0;
+}
 
 export async function insertSection(
-  courseId: string,
   data: typeof CourseSectionTable.$inferInsert
 ) {
-  console.log(
-    courseId,
-    data,
-    "insertSection ------------features/courseSections/db/sections"
-  );
+  const [newSection] = await db
+    .insert(CourseSectionTable)
+    .values(data)
+    .returning();
+
+  if (newSection == null) throw new Error("Failed to create section");
+
+  revalidateCourseSectionCache({
+    courseId: newSection.courseId,
+    id: newSection.id,
+  });
+
+  return newSection;
+}
+export async function updateSection(
+  id: string,
+  data: typeof CourseSectionTable.$inferSelect
+) {
+  const [updatedSection] = await db
+    .update(CourseSectionTable)
+    .set(data)
+    .where(eq(CourseSectionTable.id, id))
+    .returning();
+
+  if (updatedSection == null) {
+    throw new Error("Failed to update section.");
+  }
+
+  revalidateCourseSectionCache({
+    courseId: updatedSection.courseId,
+    id: updatedSection.id,
+  });
+
+  return updatedSection;
+}
+
+export async function deleteSection(id: string) {
+  const [deletedSection] = await db
+    .delete(CourseSectionTable)
+    .where(eq(CourseSectionTable.id, id))
+    .returning();
+
+  if (deletedSection == null) {
+    throw new Error("Failed to delete section.");
+  }
+
+  revalidateCourseSectionCache({
+    courseId: deletedSection.courseId,
+    id: deletedSection.id,
+  });
+
+  return deletedSection;
 }
