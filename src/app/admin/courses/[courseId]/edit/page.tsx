@@ -11,10 +11,12 @@ import { getCourseSectionCourseTag } from "@/features/courseSections/db/cache";
 import { SectionFormDialog } from "@/features/courseSections/components/SectionFormDialog";
 import { getLessonCourseTag } from "@/features/lessons/db/cache/lessons";
 import { asc, eq } from "drizzle-orm";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, Trash2Icon } from "lucide-react";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { notFound } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { ActionButton } from "@/components/ActionButton";
+import { deleteSection } from "@/features/courseSections/action/sections";
 
 export default async function EditCoursePage({
   params,
@@ -62,6 +64,25 @@ export default async function EditCoursePage({
                     </div>
                     <div className="">{section.name}</div>
                   </div>
+                  <SectionFormDialog section={section} courseId={course.id}>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="ml-auto transition duration-500 hover:-translate-y-2 hover:scale-110"
+                      >
+                        Edit
+                      </Button>
+                    </DialogTrigger>
+                  </SectionFormDialog>
+                  <ActionButton
+                    variant="destructiveOutline"
+                    requireAreYouSure
+                    action={deleteSection.bind(null, section.id)}
+                  >
+                    <Trash2Icon />
+                    <span className="sr-only">Delete</span>
+                  </ActionButton>
                 </div>
               ))}
             </CardContent>
