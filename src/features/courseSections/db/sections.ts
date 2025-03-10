@@ -32,7 +32,7 @@ export async function insertSection(
 }
 export async function updateSection(
   id: string,
-  data: typeof CourseSectionTable.$inferSelect
+  data: Partial<typeof CourseSectionTable.$inferSelect>
 ) {
   const [updatedSection] = await db
     .update(CourseSectionTable)
@@ -68,4 +68,28 @@ export async function deleteSection(id: string) {
   });
 
   return deletedSection;
+}
+
+export async function updateSectionOrders(sectionIds: string[]) {
+  const sections = await Promise.all(
+    sectionIds.map((id, index) =>
+      db
+        .update(CourseSectionTable)
+        .set({ order: index })
+        .where(eq(CourseSectionTable.id, id))
+        .returning({
+          courseId: CourseSectionTable.courseId,
+          id: CourseSectionTable.id,
+        })
+    )
+  );
+
+  // await new Promise((res) => setTimeout(res, 2000));
+
+  sections.flat().forEach(({ id, courseId }) => {
+    revalidateCourseSectionCache({
+      courseId,
+      id,
+    });
+  });
 }

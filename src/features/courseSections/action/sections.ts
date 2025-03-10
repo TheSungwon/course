@@ -13,6 +13,7 @@ import {
   insertSection,
   updateSection as updateSectionDB,
   deleteSection as deleteSectionDB,
+  updateSectionOrders as updateSectionOrdersDb,
 } from "../db/sections";
 
 export async function createSection(
@@ -64,4 +65,19 @@ export async function deleteSection(id: string) {
   await deleteSectionDB(id);
   console.log("delete section ------------features/sections/actions/sections");
   return { error: false, message: "Successfully deleted section" };
+}
+
+export async function updateSectionOrders(sectionIds: string[]) {
+  if (
+    sectionIds.length === 0 ||
+    !canUpdateCourseSections(await getCurrentUser())
+  ) {
+    return {
+      error: true,
+      message: "There was an error updating your section orders",
+    };
+  }
+
+  await updateSectionOrdersDb(sectionIds);
+  return { error: false, message: "Successfully updated section orders" };
 }

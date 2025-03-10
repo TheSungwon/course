@@ -1,14 +1,16 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { DndContext } from "@dnd-kit/core";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import {
+  arrayMove,
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { GripVerticalIcon } from "lucide-react";
-import { ReactNode, useOptimistic } from "react";
+import { ReactNode, useId, useOptimistic, useTransition } from "react";
+import { toast } from "sonner";
 
 export function SortableList<T extends { id: string }>({
   items,
@@ -21,11 +23,35 @@ export function SortableList<T extends { id: string }>({
   ) => Promise<{ error: boolean; message: string }>;
   children: (items: T[]) => ReactNode;
 }) {
+  const [dndContextId] = useId();
   const [optimisticItems, setOptimisticItems] = useOptimistic(items);
-  function handleDragEnd() {}
+  const [, startTransition] = useTransition();
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    const activeId = active.id as string;
+    const overId = over?.id as string;
+
+    if (overId == null || activeId == null) return;
+
+    function getNewArray(array: T[], activeId: string, overId: string) {
+      const oldIndex = array.findIndex((section) => section.id === activeId);
+      const newIndex = array.findIndex((section) => section.id === overId);
+
+      return arrayMove(array, oldIndex, newIndex);
+    }
+
+    startTransition(async () => {
+      setOptimisticItems((items) => getNewArray(items, activeId, overId));
+      const actionData = await onOrderChange(
+        getNewArray(optimisticItems, activeId, overId).map((item) => item.id)
+      );
+
+      toast(actionData.message, { icon: actionData.error ? "❌" : "✔️" });
+    });
+  }
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
+    <DndContext onDragEnd={handleDragEnd} id={dndContextId}>
       <SortableContext
         items={optimisticItems}
         strategy={verticalListSortingStrategy}

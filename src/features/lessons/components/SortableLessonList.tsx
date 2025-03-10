@@ -1,46 +1,54 @@
 "use client";
 import { SortableItem, SortableList } from "@/components/SortableList";
-import { CourseSectionStatus } from "@/drizzle/schema";
+import { LessonStatus } from "@/drizzle/schema";
 import { cn } from "@/lib/utils";
-import { SectionFormDialog } from "./SectionFormDialog";
 import { DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ActionButton } from "@/components/ActionButton";
-import { Trash2Icon } from "lucide-react";
-import { deleteSection, updateSectionOrders } from "../action/sections";
+import { Trash2Icon, VideoIcon } from "lucide-react";
+import { LessonFormDialog } from "./LessonFormDialog";
 
-export function SortableSectionList({
-  courseId,
+export function SortableLessonList({
   sections,
+  lessons,
 }: {
-  courseId: string;
   sections: {
     id: string;
     name: string;
-    status: CourseSectionStatus;
+  }[];
+  lessons: {
+    name: string;
+    id: string;
+    status: LessonStatus;
+    description: string | null;
+    youtubeVideoId: string;
+    sectionId: string;
   }[];
 }) {
   return (
-    <SortableList items={sections} onOrderChange={updateSectionOrders}>
+    <SortableList items={lessons} onOrderChange={updateLessonOrders}>
       {(items) =>
-        items.map((section) => (
+        items.map((lesson) => (
           <SortableItem
-            key={section.id}
-            id={section.id}
+            key={lesson.id}
+            id={lesson.id}
             className="flex items-center gap-1 w-full"
           >
             <div
               className={cn(
                 "contents",
-                section.status === "private" && "text-muted-foreground"
+                lesson.status === "private" && "text-muted-foreground"
               )}
             >
               <div className="size-4 my-4">
-                {section.status === "private" ? "🔐" : "🔓"}
+                {lesson.status === "private" ? "🔐" : ""}
               </div>
-              <div className="hover:font-extrabold">{section.name}</div>
+              <div className="size-4 my-4">
+                {lesson.status === "preview" && <VideoIcon />}
+              </div>
+              <div className="hover:font-extrabold">{lesson.name}</div>
             </div>
-            <SectionFormDialog section={section} courseId={courseId}>
+            <LessonFormDialog lesson={lesson} sections={sections}>
               <DialogTrigger asChild>
                 <Button
                   variant="outline"
@@ -50,11 +58,11 @@ export function SortableSectionList({
                   Edit
                 </Button>
               </DialogTrigger>
-            </SectionFormDialog>
+            </LessonFormDialog>
             <ActionButton
               variant="destructiveOutline"
               requireAreYouSure
-              action={deleteSection.bind(null, section.id)}
+              action={deletelesson.bind(null, lesson.id)}
               size="sm"
             >
               <Trash2Icon />
