@@ -34,6 +34,7 @@ export async function insertLesson(data: typeof LessonTable.$inferInsert) {
 
   return newLesson;
 }
+
 export async function updateLesson(
   id: string,
   data: Partial<typeof LessonTable.$inferInsert>
@@ -73,4 +74,57 @@ export async function updateLesson(
   revalidateLessonCache({ courseId, id: updatedLesson.id });
 
   return updatedLesson;
+}
+
+export async function deleteLesson(id: string) {
+  const [deletedLesson, courseId] = await db.transaction(async (trx) => {
+    const [deletedLesson] = await trx
+      .delete(LessonTable)
+      .where(eq(LessonTable.id, id))
+      .returning();
+
+    if (deletedLesson == null) {
+      trx.rollback();
+      throw new Error("레슨 삭제 실패");
+    }
+
+    const section = await trx.query.CourseSectionTable.findFirst({
+      columns: { courseId: true },
+      where: ({ id }, { eq }) => eq(id, deletedLesson.sectionId),
+    });
+
+    if (section == null) return trx.rollback();
+
+    return [deletedLesson, section.courseId];
+  });
+
+  if (deletedLesson == null) throw new Error("레슨 삭제 실패");
+
+  revalidateLessonCache({ courseId, id: deletedLesson.id });
+
+  return deletedLesson;
+}
+
+export async function updateLessonOrders(lessonIds: stringp[]) {
+  const [lessons, courseId] = await db.transaction(async (trx) => {
+    const lessons = await Promise.all(
+      lessonIds.map((id, index) =>
+        db
+          .update(LessonTable)
+          .set({ order: index })
+          .where(eq(LessonTable.id, id))
+          .returning({
+            sectionId: LessonTable.sectionId,
+            id: LessonTable.id,
+          })
+      )
+    );
+
+    const sectionId = lessons[0]?.[0]?.sectionId;
+    if (sectionId == null) return trx.rollback();
+
+    const section = await trx.query.CourseSectionTable.findFirst({
+      columns: { courseId: true },
+    });
+  });
 }

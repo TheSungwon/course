@@ -16,9 +16,7 @@ import {
 } from "../db/lessons";
 import { lessonSchema } from "../schemas/lesson";
 
-export async function createSection(
-  unsafeData: z.infer<typeof lessonSchema>
-) {
+export async function createLesson(unsafeData: z.infer<typeof lessonSchema>) {
   const { success, data } = lessonSchema.safeParse(unsafeData);
 
   if (!success || !canCreateLessons(await getCurrentUser())) {
@@ -35,7 +33,7 @@ export async function createSection(
   return { error: false, message: "section 성공" };
 }
 
-export async function updateSection(
+export async function updateLesson(
   id: string,
   unsafeData: z.infer<typeof lessonSchema>
 ) {
@@ -46,10 +44,10 @@ export async function updateSection(
   }
 
   await updateLessonDB(id, data);
-  return { error: false, message: "Successfully updated section" };
+  return { error: false, message: "Successfully updated Lesson" };
 }
 
-export async function deleteSection(id: string) {
+export async function deleteLesson(id: string) {
   if (!canDeleteLessons(await getCurrentUser())) {
     return { error: true, message: "There was an error deleting your 레슨" };
   }
@@ -59,10 +57,7 @@ export async function deleteSection(id: string) {
 }
 
 export async function updateLessonOrders(lessonIds: string[]) {
-  if (
-    lessonIds.length === 0 ||
-    !canUpdateLessons(await getCurrentUser())
-  ) {
+  if (lessonIds.length === 0 || !canUpdateLessons(await getCurrentUser())) {
     return {
       error: true,
       message: "There was an error updating your 레슨 orders",
