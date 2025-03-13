@@ -105,7 +105,7 @@ export async function deleteLesson(id: string) {
   return deletedLesson;
 }
 
-export async function updateLessonOrders(lessonIds: stringp[]) {
+export async function updateLessonOrders(lessonIds: string[]) {
   const [lessons, courseId] = await db.transaction(async (trx) => {
     const lessons = await Promise.all(
       lessonIds.map((id, index) =>
@@ -125,6 +125,14 @@ export async function updateLessonOrders(lessonIds: stringp[]) {
 
     const section = await trx.query.CourseSectionTable.findFirst({
       columns: { courseId: true },
+      where: eq(CourseSectionTable.id, sectionId),
     });
+
+    if (section == null) return trx.rollback();
+    return [lessons, section.courseId];
+  });
+
+  lessons.flat().forEach(({ id }) => {
+    revalidateLessonCache({ courseId, id });
   });
 }

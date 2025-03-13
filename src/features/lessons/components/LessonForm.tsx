@@ -25,6 +25,8 @@ import {
 } from "@/components/ui/select";
 import { lessonSchema } from "../schemas/lesson";
 import { Textarea } from "@/components/ui/textarea";
+import { createLesson, updateLesson } from "../actions/lessons";
+import { YouTubeVideoPlayer } from "./YoutubeVideoPlayer";
 
 export function LessonForm({
   sections,
@@ -60,9 +62,7 @@ export function LessonForm({
 
   async function onSubmit(values: z.infer<typeof lessonSchema>) {
     const action =
-      section == null
-        ? createSection.bind(null, courseId)
-        : updateSection.bind(null, section.id);
+      lesson == null ? createLesson : updateLesson.bind(null, lesson.id);
 
     const data = await action(values);
     toast.error(data.message);
@@ -196,7 +196,11 @@ export function LessonForm({
             Save
           </Button>
         </div>
-        {/* {videoId && <YouTubeVideoPlayer videoId={videoId} />} */}
+        {videoId && (
+          <div className="aspect-video">
+            <YouTubeVideoPlayer videoId={videoId} />
+          </div>
+        )}
       </form>
     </Form>
   );
