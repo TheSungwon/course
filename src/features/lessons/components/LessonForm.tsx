@@ -34,7 +34,7 @@ export function LessonForm({
   lesson,
   onSuccess,
 }: {
-  defaultSectionId: string;
+  defaultSectionId?: string;
   lesson?: {
     name: string;
     id: string;

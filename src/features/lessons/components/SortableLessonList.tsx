@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ActionButton } from "@/components/ActionButton";
 import { Trash2Icon, VideoIcon } from "lucide-react";
 import { LessonFormDialog } from "./LessonFormDialog";
+import { deleteLesson, updateLessonOrders } from "../actions/lessons";
 
 export function SortableLessonList({
   sections,
@@ -62,7 +63,7 @@ export function SortableLessonList({
             <ActionButton
               variant="destructiveOutline"
               requireAreYouSure
-              action={deletelesson.bind(null, lesson.id)}
+              action={deleteLesson.bind(null, lesson.id)}
               size="sm"
             >
               <Trash2Icon />

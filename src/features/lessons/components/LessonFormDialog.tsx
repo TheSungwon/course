@@ -44,7 +44,7 @@ export function LessonFormDialog({
           <LessonForm
             sections={sections}
             lesson={lesson}
-            defaultSectionId={defaultSectionId ?? ""}
+            defaultSectionId={defaultSectionId}
             onSuccess={() => setIsOpen(false)}
           />
         </div>
