@@ -13,3 +13,14 @@ export function formatPlural(
 
   return includeCount ? `${count} ${word}` : word;
 }
+
+export function formatPrice(amount: number, { showZeroAsAmount = false } = {}) {
+  const formatter = new Intl.NumberFormat(undefined, {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+  });
+
+  if (amount === 0 && !showZeroAsAmount) return "Free";
+  return formatter.format(amount);
+}
