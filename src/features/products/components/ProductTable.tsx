@@ -11,10 +11,10 @@ import {
 import { formatPlural, formatPrice } from "@/lib/formatters";
 import { EyeIcon, LockIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
-import { deleteCourse } from "../actions/courses";
 import { ProductStatus } from "@/drizzle/schema";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
+import { deleteProduct } from "../actions/products";
 
 export function ProductTable({
   products,

@@ -9,7 +9,7 @@ export function getProductIdTag(id: string) {
   return getIdTag("products", id);
 }
 
-export function revalidateLessonCache({ id }: { id: string }) {
+export function revalidateProductCache(id: string) {
   revalidateTag(getProductGlobalTag());
   revalidateTag(getProductIdTag(id));
 }
