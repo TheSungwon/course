@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { MultiSelect } from "@/components/ui/custom/multi-select";
 
 export function ProductForm({
   product,
@@ -136,7 +137,7 @@ export function ProductForm({
                   Image URL
                 </FormLabel>
                 <FormControl>
-                  <Textarea className="min-h-20 resize-none" {...field} />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -171,29 +172,58 @@ export function ProductForm({
                     ))}
                   </SelectContent>
                 </Select>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  <RequiredLabelIcon
-                    className="text-red-500 animate-ping"
-                    color="green"
-                  />
-                  Description
-                </FormLabel>
-                <FormControl>
-                  <Textarea className="min-h-20 resize-none" {...field} />
-                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
+        <FormField
+          control={form.control}
+          name="courseIds"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                <RequiredLabelIcon
+                  className="text-red-500 animate-ping"
+                  color="green"
+                />
+                Included Courses
+              </FormLabel>
+              <FormControl>
+                <MultiSelect
+                  selectPlaceholder="Select Courses"
+                  searchPlaceholder="Search Courses"
+                  options={courses}
+                  getLabel={(c) => c.name}
+                  getValue={(c) => c.id}
+                  selectedValues={field.value}
+                  onSelectedValuesChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                <RequiredLabelIcon
+                  className="text-red-500 animate-ping"
+                  color="green"
+                />
+                Description
+              </FormLabel>
+              <FormControl>
+                <Textarea className="min-h-20 resize-none" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <div className="self-end">
           <Button disabled={form.formState.isSubmitting} type="submit">
             Save

@@ -13,16 +13,13 @@ export async function updateProductDB(
 ) {}
 
 export async function deleteProductDB(id: string) {
-  const [deleteProduct] = await db
+  const [deletedProduct] = await db
     .delete(ProductTable)
     .where(eq(ProductTable.id, id))
     .returning();
+  if (deletedProduct == null) throw new Error("Failed to delete product");
 
-  if (deleteProduct == null) {
-    throw new Error("Failed to delete product.");
-  }
+  revalidateProductCache(deletedProduct.id);
 
-  revalidateProductCache(deleteProduct.id);
-
-  return deleteProduct;
+  return deletedProduct;
 }

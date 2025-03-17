@@ -88,8 +88,8 @@ export function ProductTable({
                 <ActionButton
                   variant="destructiveOutline"
                   requireAreYouSure
-                  action={() => deleteProduct(product.id)}
-                  // action={deleteProduct.bind(null, product.id)}
+                  // action={() => deleteProduct(product.id)}
+                  action={deleteProduct.bind(null, product.id)}
                 >
                   <Trash2Icon />
                   <span className="sr-only">Delete</span>
