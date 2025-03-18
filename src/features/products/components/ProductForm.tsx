@@ -61,8 +61,8 @@ export function ProductForm({
   async function onSubmit(values: z.infer<typeof productSchema>) {
     // const data = await createCourse(values);
 
-    const action =
-      product == null ? createProduct : updateProduct.bind(null, product.id);
+    const action = createProduct;
+    // const action = product == null ? createProduct : updateProduct.bind(null, product.id);
 
     const data = await action(values);
 
@@ -130,11 +130,8 @@ export function ProductForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  <RequiredLabelIcon
-                    className="text-red-500 animate-ping"
-                    color="green"
-                  />
-                  Image URL
+                  <RequiredLabelIcon />
+                  Image Url
                 </FormLabel>
                 <FormControl>
                   <Input {...field} />
@@ -148,20 +145,14 @@ export function ProductForm({
             name="status"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  <RequiredLabelIcon
-                    className="text-red-500 animate-ping"
-                    color="green"
-                  />
-                  Status
-                </FormLabel>
+                <FormLabel>Status</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="text-gray-700">
-                      <SelectValue className="text-gray-700" />
+                    <SelectTrigger>
+                      <SelectValue />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -182,17 +173,11 @@ export function ProductForm({
           name="courseIds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                <RequiredLabelIcon
-                  className="text-red-500 animate-ping"
-                  color="green"
-                />
-                Included Courses
-              </FormLabel>
+              <FormLabel>Included Courses</FormLabel>
               <FormControl>
                 <MultiSelect
-                  selectPlaceholder="Select Courses"
-                  searchPlaceholder="Search Courses"
+                  selectPlaceholder="Select courses"
+                  searchPlaceholder="Search courses"
                   options={courses}
                   getLabel={(c) => c.name}
                   getValue={(c) => c.id}
@@ -210,10 +195,7 @@ export function ProductForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                <RequiredLabelIcon
-                  className="text-red-500 animate-ping"
-                  color="green"
-                />
+                <RequiredLabelIcon />
                 Description
               </FormLabel>
               <FormControl>

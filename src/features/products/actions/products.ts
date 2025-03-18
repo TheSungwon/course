@@ -1,3 +1,4 @@
+"use server";
 import { getCurrentUser } from "@/services/clerk";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -20,7 +21,7 @@ export async function createProduct(unsafeData: z.infer<typeof productSchema>) {
     return { error: true, message: "There was an error creating your product" };
   }
 
-  await insertProductDB(data as Product);
+  await insertProductDB(data);
 
   redirect("/admin/products");
 }
@@ -35,7 +36,7 @@ export async function updateProduct(
     return { error: true, message: "There was an error updating your product" };
   }
 
-  await updateProductDB(data as Product);
+  await updateProductDB(data);
 
   redirect("/admin/products");
 }
