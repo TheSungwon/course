@@ -37,7 +37,36 @@ export async function updateProductDB(
   id: string,
   data: Partial<typeof ProductTable.$inferInsert & { courseIds: string[] }>
 ) {
-  return;
+  const updatedProduct = await db.transaction(async (trx) => {
+    const [updatedProduct] = await trx
+      .update(ProductTable)
+      .set(data)
+      .where(eq(ProductTable.id, id))
+      .returning();
+
+    if (updatedProduct == null) {
+      trx.rollback();
+      throw new Error("Failed to update product");
+    }
+
+    await trx
+      .delete(CourseProductTable)
+      .where(eq(CourseProductTable.productId, id));
+
+    if (data.courseIds) {
+      await trx.insert(CourseProductTable).values(
+        data.courseIds.map((courseId) => ({
+          courseId,
+          productId: updatedProduct.id,
+        }))
+      );
+    }
+
+    return updatedProduct;
+  });
+
+  revalidateProductCache(updatedProduct.id);
+  return updatedProduct;
 }
 
 export async function deleteProductDB(id: string) {

@@ -67,7 +67,7 @@ export function ProductTable({
                       plural: "courses",
                     })}
                     {"  "}
-                    &#9679;
+                    &#903;{"  "}
                     {formatPrice(product.priceInDollars)}
                   </div>
                 </div>

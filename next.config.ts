@@ -6,6 +6,15 @@ const nextConfig: NextConfig = {
     dynamicIO: true,
     authInterrupts: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "www.google.com",
+        pathname: "/images/branding/googlelogo/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

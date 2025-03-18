@@ -61,8 +61,8 @@ export function ProductForm({
   async function onSubmit(values: z.infer<typeof productSchema>) {
     // const data = await createCourse(values);
 
-    const action = createProduct;
-    // const action = product == null ? createProduct : updateProduct.bind(null, product.id);
+    const action =
+      product == null ? createProduct : updateProduct.bind(null, product.id);
 
     const data = await action(values);
 
@@ -117,7 +117,12 @@ export function ProductForm({
                     type="number"
                     step={1}
                     min={0}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    onChange={(e) => {
+                      const filteredValue = e.target.valueAsNumber
+                        .toString()
+                        .replace(/[^0-9.]/g, "");
+                      field.onChange(filteredValue);
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -130,8 +135,11 @@ export function ProductForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  <RequiredLabelIcon />
-                  Image Url
+                  <RequiredLabelIcon
+                    className="text-red-500 animate-ping"
+                    color="green"
+                  />
+                  Image URL
                 </FormLabel>
                 <FormControl>
                   <Input {...field} />
@@ -145,14 +153,20 @@ export function ProductForm({
             name="status"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Status</FormLabel>
+                <FormLabel>
+                  <RequiredLabelIcon
+                    className="text-red-500 animate-ping"
+                    color="green"
+                  />
+                  Status
+                </FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue />
+                    <SelectTrigger className="text-gray-700">
+                      <SelectValue className="text-gray-700" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -173,11 +187,17 @@ export function ProductForm({
           name="courseIds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Included Courses</FormLabel>
+              <FormLabel>
+                <RequiredLabelIcon
+                  className="text-red-500 animate-ping"
+                  color="green"
+                />
+                Included Courses
+              </FormLabel>
               <FormControl>
                 <MultiSelect
-                  selectPlaceholder="Select courses"
-                  searchPlaceholder="Search courses"
+                  selectPlaceholder="Select Courses"
+                  searchPlaceholder="Search Courses"
                   options={courses}
                   getLabel={(c) => c.name}
                   getValue={(c) => c.id}
@@ -195,7 +215,10 @@ export function ProductForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                <RequiredLabelIcon />
+                <RequiredLabelIcon
+                  className="text-red-500 animate-ping"
+                  color="green"
+                />
                 Description
               </FormLabel>
               <FormControl>

@@ -36,7 +36,7 @@ export async function updateProduct(
     return { error: true, message: "There was an error updating your product" };
   }
 
-  await updateProductDB(data);
+  await updateProductDB(id, data);
 
   redirect("/admin/products");
 }
