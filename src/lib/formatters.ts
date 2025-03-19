@@ -22,5 +22,6 @@ export function formatPrice(amount: number, { showZeroAsAmount = false } = {}) {
   });
 
   if (amount === 0 && !showZeroAsAmount) return "Free";
+
   return formatter.format(amount);
 }

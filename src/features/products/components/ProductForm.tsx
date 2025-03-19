@@ -121,7 +121,7 @@ export function ProductForm({
                       const filteredValue = e.target.valueAsNumber
                         .toString()
                         .replace(/[^0-9.]/g, "");
-                      field.onChange(filteredValue);
+                      field.onChange(parseInt(filteredValue));
                     }}
                   />
                 </FormControl>
