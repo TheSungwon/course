@@ -1,4 +1,5 @@
-import { UserRole, userRoles } from "@/drizzle/schema";
+import { CourseSectionTable, UserRole, userRoles } from "@/drizzle/schema";
+import { eq } from "drizzle-orm";
 
 export function canCreateCourseSections({
   role,
@@ -21,3 +22,8 @@ export function canDeleteCourseSections({
 }) {
   return role === userRoles[1];
 }
+
+export const wherePublicCourseSections = eq(
+  CourseSectionTable.status,
+  "public"
+);
