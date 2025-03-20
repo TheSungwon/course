@@ -8,6 +8,7 @@ export async function getCurrentUser() {
 
   return {
     clerkUserId: userId,
+    userId: sessionClaims?.dbId,
     role: sessionClaims?.role,
     redirectToSignIn,
   };
