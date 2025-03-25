@@ -4,16 +4,18 @@ import {
   EmbeddedCheckoutProvider,
   EmbeddedCheckout,
 } from "@stripe/react-stripe-js";
+import { stripeClientPromise } from "../stripeClient";
+import { getClientSessionSecret } from "../actions/stripe";
 export function StripCheckoutForm({
   product,
   user,
 }: {
   product: {
-    priceInDollar: number;
+    priceInDollars: number;
     name: string;
-    id: string;
     imageUrl: string;
     description: string;
+    id: string;
   };
 
   user: {
