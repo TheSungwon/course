@@ -3,7 +3,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 
 const client = await clerkClient();
 
-export async function getCurrentUser() {
+export async function getCurrentUser({ allData = false } = {}) {
   const { userId, sessionClaims, redirectToSignIn } = await auth();
 
   return {

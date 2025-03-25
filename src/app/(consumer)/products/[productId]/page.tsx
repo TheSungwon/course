@@ -81,7 +81,7 @@ export default async function ProductPage({
               })}
             </div>
           </div>
-          <div className="text-xl">{product.description}</div>
+          <div className="text-xl mb-2">{product.description}</div>
           <Suspense fallback={<SkeletonButton className="h-12 w-36" />}>
             <PurchaseButton productId={product.id} />
           </Suspense>
@@ -176,7 +176,7 @@ async function PurchaseButton({ productId }: { productId: string }) {
     return <p>You already own this product</p>;
   } else {
     return (
-      <Button className="text-xl h-auto py-4 px-8 rounded-lg" asChild>
+      <Button className="text-xl h-auto py-4 px-8 rounded-lg w-full" asChild>
         <Link href={`/products/${productId}/purchase`}>Get Now</Link>
       </Button>
     );
