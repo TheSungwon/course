@@ -7,10 +7,13 @@ import { revalidatePurchaseCache } from "./db/cache";
 // productDetails : product,
 // userId: user.id,
 // productId
-export async function insertPurchase(data: typeof PurchaseTable.$inferInsert) {
+export async function insertPurchase(
+  data: typeof PurchaseTable.$inferInsert,
+  trx: Omit<typeof db, "$client"> = db
+) {
   const details = data.productDetails;
 
-  const [newPurchase] = await db
+  const [newPurchase] = await trx
     .insert(PurchaseTable)
     .values({
       ...data,
