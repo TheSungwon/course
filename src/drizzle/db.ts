@@ -18,7 +18,7 @@ async function testDbConnection() {
     await db.select().from(schema.CourseTable);
     if (!getConnected()) {
       setConnected(true);
-      console.log("DB 연결 성공 ✔️");
+      console.log("DB 연결 성공 🚀");
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

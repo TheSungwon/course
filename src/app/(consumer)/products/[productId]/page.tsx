@@ -195,7 +195,8 @@ async function Price({ price }: { price: number }) {
         {formatPrice(price)}
       </div>
       <div className="text-xl">
-        {formatPrice(price * (1 - coupon.discountPercentage / 100))}
+        {formatPrice(price * (1 - coupon.discountPercentage))}
+        {/* {formatPrice(price * (1 - coupon.discountPercentage / 100))} USD일 때 적용 */}
       </div>
     </div>
   );

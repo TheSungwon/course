@@ -16,7 +16,7 @@ export async function getCurrentUser({ allData = false } = {}) {
     role: sessionClaims?.role,
     user:
       sessionClaims?.dbId != null
-        ? await getUserCoupon(sessionClaims?.dbId)
+        ? await getUser(sessionClaims?.dbId)
         : undefined,
     redirectToSignIn,
   };
@@ -35,7 +35,7 @@ export async function syncClerkUserMetadata(user: {
   });
 }
 
-async function getUserCoupon(id: string) {
+async function getUser(id: string) {
   "use cache";
   cacheTag(getUserIdTag(id));
 

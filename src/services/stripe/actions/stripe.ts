@@ -39,7 +39,7 @@ export async function getClientSessionSecret(
         quantity: 1,
         price_data: {
           // 결제 통화를 미국 달러(USD)로 설정합니다.
-          currency: "usd",
+          currency: "krw",
           product_data: {
             // 상품의 이름을 지정합니다.
             name: product.name,
@@ -51,7 +51,8 @@ export async function getClientSessionSecret(
             description: product.description,
           },
           // Stripe에서는 단위 금액이 센트 단위이므로, 달러 단위를 센트로 변환합니다.
-          unit_amount: product.priceInDollars * 100,
+          unit_amount: product.priceInDollars,
+          // unit_amount: product.priceInDollars * 100, USD일때 적용
         },
       },
     ],

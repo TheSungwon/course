@@ -15,10 +15,10 @@ export function formatPlural(
 }
 
 export function formatPrice(amount: number, { showZeroAsAmount = false } = {}) {
-  const formatter = new Intl.NumberFormat(undefined, {
+  const formatter = new Intl.NumberFormat("ko-kr", {
     style: "currency",
-    currency: "USD",
-    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+    currency: "KRW",
+    // minimumFractionDigits: Number.isInteger(amount) ? 0 : 2, //USD일 때 적용
   });
 
   if (amount === 0 && !showZeroAsAmount) return "Free";

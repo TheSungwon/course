@@ -63,7 +63,8 @@ async function Price({ price }: { price: number }) {
       <div className="line-through text-xs opacity-50">
         {formatPrice(price)}
       </div>
-      <div>{formatPrice(price * (1 - coupon.discountPercentage / 100))}</div>
+      <div>{formatPrice(price * (1 - coupon.discountPercentage))}</div>
+      {/* <div>{formatPrice(price * (1 - coupon.discountPercentage / 100))}</div>USD일때 적용 */}
     </div>
   );
 }
