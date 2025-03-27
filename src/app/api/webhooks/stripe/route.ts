@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
 
     redirectUrl = `/products/${productId}/purchase/success`;
   } catch {
-    redirectUrl = `/products/failure`;
+    redirectUrl = `/products/purchase-failure`;
   }
 
   return NextResponse.redirect(new URL(redirectUrl, request.url));
