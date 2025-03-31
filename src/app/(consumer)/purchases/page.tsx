@@ -3,7 +3,10 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { db } from "@/drizzle/db";
 import { PurchaseTable } from "@/drizzle/schema";
 import { getPurchaseUserTag } from "@/features/purchases/db/cache";
-import { UserPurchaseTable } from "@/features/purchases/db/components/UserPurchaseTable";
+import {
+  UserPurchaseTable,
+  UserPurchaseTableSkeleton,
+} from "@/features/purchases/db/components/UserPurchaseTable";
 import { getCurrentUser } from "@/services/clerk";
 import { desc, eq } from "drizzle-orm";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
@@ -28,7 +31,7 @@ async function SuspenseBoundary() {
 
   const purchases = await getPurchases(userId);
 
-  if (purchases.length) {
+  if (purchases.length === 0) {
     return (
       <div className="flex flex-col gap-2 items-start ">
         you have no purchases

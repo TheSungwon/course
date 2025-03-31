@@ -1,4 +1,4 @@
-import { SkeletonButton } from "@/components/SkeletonButton";
+import { SkeletonButton } from "@/components/Skeleton";
 import {
   Accordion,
   AccordionContent,
