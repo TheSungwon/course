@@ -1,6 +1,6 @@
 import { db } from "@/drizzle/db";
 import { PurchaseTable } from "@/drizzle/schema";
-import { revalidatePurchaseCache } from "./db/cache";
+import { revalidatePurchaseCache } from "./cache";
 
 // stripeSessionId : checkoutSession.id,
 // pricePaidInCents : checkoutSession.amount_total || product.priceInDollars.toExponential,

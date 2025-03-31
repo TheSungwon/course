@@ -33,7 +33,7 @@ export default async function ProductPurchaseSuccessPage({
             을 구매해주셔서 감사합니다.
           </div>
           <Button asChild className="text-xl h-auto py-4 px-8 rounded-lg">
-            <Link href="/courses">Course로 이동</Link>
+            <Link href="/courses">내 강의로 이동</Link>
           </Button>
         </div>
         <div className="relative aspect-video max-w-lg flex-grow">

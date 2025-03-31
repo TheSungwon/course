@@ -9,18 +9,15 @@ export async function insertUser(data: typeof UserTable.$inferInsert) {
     .values(data)
     .returning()
     .onConflictDoUpdate({
-      target: [UserTable.id],
+      target: [UserTable.clerkUserId],
       set: data,
     });
 
-  if (newUser == null) {
-    throw new Error("Failed to insert user.");
-  }
-
+  if (newUser == null) throw new Error("Failed to create user");
   revalidateUserCache(newUser.id);
+
   return newUser;
 }
-
 export async function updateUser(
   { clerkUserId }: { clerkUserId: string },
   data: Partial<typeof UserTable.$inferInsert>
@@ -28,13 +25,12 @@ export async function updateUser(
   const [updatedUser] = await db
     .update(UserTable)
     .set(data)
-    .returning()
-    .where(eq(UserTable.clerkUserId, clerkUserId));
-  if (updatedUser == null) {
-    throw new Error("Failed to update user.");
-  }
+    .where(eq(UserTable.clerkUserId, clerkUserId))
+    .returning();
 
+  if (updatedUser == null) throw new Error("Failed to update user");
   revalidateUserCache(updatedUser.id);
+
   return updatedUser;
 }
 
@@ -48,12 +44,17 @@ export async function deleteUser({ clerkUserId }: { clerkUserId: string }) {
       clerkUserId: "deleted",
       imageUrl: null,
     })
-    .returning()
-    .where(eq(UserTable.clerkUserId, clerkUserId));
-  if (deletedUser == null) {
-    throw new Error("Failed to delete user.");
-  }
+    .where(eq(UserTable.clerkUserId, clerkUserId))
+    .returning();
 
+  if (deletedUser == null) {
+    // throw new Error("Failed to delete user");
+    console.warn(
+      `User with clerkUserId ${clerkUserId} not found or already deleted`
+    );
+    return null;
+  }
   revalidateUserCache(deletedUser.id);
+
   return deletedUser;
 }

@@ -67,13 +67,13 @@ async function SuspenseComponent({
       {isSignUp ? (
         <SignUp
           routing="hash"
-          signInUrl={`/products/${product.id}/purchase?authMode=signIn`}
+          signInUrl={`/products/${productId}/purchase?authMode=signIn`}
           forceRedirectUrl={`/products/${productId}/purchase`}
         />
       ) : (
         <SignIn
           routing="hash"
-          signUpUrl={`/products/${product.id}/purchase?authMode=signUp`}
+          signUpUrl={`/products/${productId}/purchase?authMode=signUp`}
           forceRedirectUrl={`/products/${productId}/purchase`}
         />
       )}
