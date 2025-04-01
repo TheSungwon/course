@@ -5,6 +5,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -12,15 +13,15 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { db } from "@/drizzle/db";
 import { PurchaseTable } from "@/drizzle/schema";
 import { getPurchaseIdTag } from "@/features/purchases/db/cache";
-import { formatDate } from "@/lib/formatters";
+import { formatDate, formatPrice } from "@/lib/formatters";
+import { cn } from "@/lib/utils";
 import { getCurrentUser } from "@/services/clerk";
 import { stripeServerClient } from "@/services/stripe/stripeServer";
 import { and, eq } from "drizzle-orm";
-import { ReceiptPoundSterling } from "lucide-react";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
+import { Fragment, Suspense } from "react";
 import Stripe from "stripe";
 
 export default async function PurchasesPage({
@@ -101,6 +102,19 @@ async function SuspenseBoundary({ purchaseId }: { purchaseId: string }) {
             <div>thesungwon</div>
           </div>
         </CardContent>
+
+        <CardFooter className="grid grid-cols-2 gap-y-4 gap-x-8 border-t pt-4">
+          {pricingRows.map(({ label, amountInDollars, isBold }) => (
+            <Fragment key={label}>
+              <div className={cn("text-sm", isBold && "font-bold")}>
+                {label}
+              </div>
+              <div className={cn("text-right", isBold && "font-bold")}>
+                {formatPrice(amountInDollars)}
+              </div>
+            </Fragment>
+          ))}
+        </CardFooter>
       </Card>
     </>
   );
@@ -145,7 +159,7 @@ async function getStripeDetails(
 
   return {
     receiptUrl: getReceiptUrl(payment_intent),
-    pricingRows: getPricingRows(total_details.details, {
+    pricingRows: getPricingRows(total_details, {
       total: (amount_total ?? pricePaidInCents) - (refundAmount ?? 0),
       subtotal: amount_subtotal ?? pricePaidInCents,
       refund: refundAmount,
@@ -194,23 +208,23 @@ function getPricingRows(
   if (refund) {
     pricingRows.push({
       label: "환불",
-      amountInDollars: refund / 100,
+      amountInDollars: refund,
     });
   }
 
   if (pricingRows.length === 0) {
-    return [{ label: "total", amountInDollars: total / 100, isBold: true }];
+    return [{ label: "total", amountInDollars: total, isBold: true }];
   }
 
   return [
     {
       label: "subtotal",
-      amountInDollars: subtotal / 100,
+      amountInDollars: subtotal,
     },
     ...pricingRows,
     {
       label: "total",
-      amountInDollars: total / 100,
+      amountInDollars: total,
       isBold: true,
     },
   ];

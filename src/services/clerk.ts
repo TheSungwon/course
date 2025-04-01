@@ -13,7 +13,7 @@ export async function getCurrentUser({ allData = true } = {}) {
 
   console.log(
     userId,
-    sessionClaims?.dbId,
+    sessionClaims,
     "-----------------------------------getcurrentuser"
   );
   if (userId != null && sessionClaims?.dbId == null) {
