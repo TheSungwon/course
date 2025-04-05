@@ -45,7 +45,6 @@ export function CoursePageClient({
   };
 }) {
   const { lessonId } = useParams();
-  console.log(course, "coursecoursecoursecourse");
 
   const defaultValue =
     typeof lessonId === "string"
@@ -63,7 +62,6 @@ export function CoursePageClient({
         <AccordionItem key={section.id} value={section.id}>
           <AccordionTrigger className="text-lg">
             {section.name}
-            {lessonId}
           </AccordionTrigger>
 
           <AccordionContent className="flex flex-col gap-1">

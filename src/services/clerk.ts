@@ -11,11 +11,11 @@ const client = await clerkClient();
 export async function getCurrentUser({ allData = true } = {}) {
   const { userId, sessionClaims, redirectToSignIn } = await auth();
 
-  console.log(
-    userId,
-    sessionClaims,
-    "-----------------------------------getcurrentuser"
-  );
+  // console.log(
+  //   userId,
+  //   sessionClaims,
+  //   "-----------------------------------getcurrentuser"
+  // );
   if (userId != null && sessionClaims?.dbId == null) {
     redirect("/api/clerk/syncUsers");
   }

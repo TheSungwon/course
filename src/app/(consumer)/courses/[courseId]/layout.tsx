@@ -102,12 +102,6 @@ async function SuspenseBoundary({
   const completedLessonIds =
     userId == null ? [] : await getCompletedLessonIds(userId);
 
-  console.log(completedLessonIds, "completedLessonIds");
-  console.log(
-    mapCourse({ course, completedLessonIds }),
-    "mapCourse(course, completedLessonIds)"
-  );
-
   return (
     <CoursePageClient course={mapCourse({ course, completedLessonIds })} />
   );
@@ -119,10 +113,6 @@ async function getCompletedLessonIds(userId: string) {
     where: eq(UserLessonCompleteTable.userId, userId),
   });
 
-  console.log(
-    data.map((d) => d.lessonId),
-    "dddddddddddddddddddddd"
-  );
   return data.map((d) => d.lessonId);
   // return data.map(({ lessonId }) => lessonId);
 }
