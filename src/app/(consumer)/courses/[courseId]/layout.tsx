@@ -15,6 +15,7 @@ import { asc, eq } from "drizzle-orm";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { notFound } from "next/navigation";
 import React, { ReactNode, Suspense } from "react";
+import { CoursePageClient } from "./_client";
 
 export default async function CoursePageLayout({
   params,
@@ -29,22 +30,24 @@ export default async function CoursePageLayout({
   if (course == null) return notFound();
 
   return (
-    <div className="grid grid-cols-[300px,1fr], gap-8 container">
+    <div className="grid grid-cols-[300px,1fr] gap-8 container">
       <div className="py-4">
-        <div className="text-lg font-semibold">
-          {course.name}
+        <div className="text-lg font-semibold">{course.name}</div>
 
-          <Suspense fallback={null}>
-            <SuspenseBoundary course={course} />
-          </Suspense>
-        </div>
+        <Suspense
+          fallback={
+            <CoursePageClient
+              course={mapCourse({ course, completedLessonIds: [] })}
+            />
+          }
+        >
+          <SuspenseBoundary course={course} />
+        </Suspense>
       </div>
 
       <div className="py-4">{children}</div>
     </div>
   );
-
-  return null;
 }
 
 async function getCourse(id: string) {
@@ -99,7 +102,15 @@ async function SuspenseBoundary({
   const completedLessonIds =
     userId == null ? [] : await getCompletedLessonIds(userId);
 
-  return <>hihihihihihihihihi</>;
+  console.log(completedLessonIds, "completedLessonIds");
+  console.log(
+    mapCourse({ course, completedLessonIds }),
+    "mapCourse(course, completedLessonIds)"
+  );
+
+  return (
+    <CoursePageClient course={mapCourse({ course, completedLessonIds })} />
+  );
 }
 
 async function getCompletedLessonIds(userId: string) {
@@ -108,5 +119,44 @@ async function getCompletedLessonIds(userId: string) {
     where: eq(UserLessonCompleteTable.userId, userId),
   });
 
-  return data.map(({ lessonId }) => lessonId);
+  console.log(
+    data.map((d) => d.lessonId),
+    "dddddddddddddddddddddd"
+  );
+  return data.map((d) => d.lessonId);
+  // return data.map(({ lessonId }) => lessonId);
+}
+
+function mapCourse({
+  course,
+  completedLessonIds,
+}: {
+  course: {
+    name: string;
+    id: string;
+    courseSections: {
+      id: string;
+      name: string;
+      lessons: {
+        id: string;
+        name: string;
+      }[];
+    }[];
+  };
+  completedLessonIds: string[];
+}) {
+  return {
+    ...course,
+    courseSections: course.courseSections.map((section) => {
+      return {
+        ...section,
+        lessons: section.lessons.map((lesson) => {
+          return {
+            ...lesson,
+            isComplete: completedLessonIds.includes(lesson.id),
+          };
+        }),
+      };
+    }),
+  };
 }
