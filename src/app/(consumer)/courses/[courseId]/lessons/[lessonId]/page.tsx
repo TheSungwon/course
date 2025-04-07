@@ -13,7 +13,7 @@ import {
   wherePublicLessons,
 } from "@/features/lessons/permissions/lessons";
 import { getCurrentUser } from "@/services/clerk";
-import { and, eq } from "drizzle-orm";
+import { and, eq, is } from "drizzle-orm";
 import {
   CheckSquare2,
   CheckSquare2Icon,
@@ -25,6 +25,7 @@ import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { notFound } from "next/navigation";
 import { cache, Suspense } from "react";
 import { ActionButton } from "@/components/ActionButton";
+import { canUpdateUserLessonCompleteStatus } from "@/features/lessons/permissions/userLessonComplete";
 
 export default async function LessonPage({
   params,
@@ -100,7 +101,11 @@ async function SuspenseBoundary({
         {canView ? (
           <YouTubeVideoPlayer
             videoId={lesson.youtubeVideoId}
-            onFinishedVideo={undefined}
+            onFinishedVideo={
+              !isLessonComplete && canUpdateCompletionStatus
+                ? updateLessonCompleteStatus.bind(null, lesson.id, true)
+                : undefined
+            }
           />
         ) : (
           <div className="flex items-center justify-center bg-primary text-primary-foreground h-full w-full">
@@ -117,6 +122,7 @@ async function SuspenseBoundary({
                 이전
               </Link>
             </Button>
+
             <ActionButton action={null} variant="outline">
               <div className="flex gap-2 items-center text-black font-semibold">
                 {isLessonComplete ? (
