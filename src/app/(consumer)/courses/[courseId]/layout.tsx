@@ -16,6 +16,7 @@ import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { notFound } from "next/navigation";
 import React, { ReactNode, Suspense } from "react";
 import { CoursePageClient } from "./_client";
+import { getUserLessonCompleteUserTag } from "@/features/lessons/db/cache/userLessonComplete";
 
 export default async function CoursePageLayout({
   params,
@@ -30,22 +31,30 @@ export default async function CoursePageLayout({
   if (course == null) return notFound();
 
   return (
-    <div className="grid grid-cols-[300px,1fr] gap-8 container">
-      <div className="py-4">
-        <div className="text-lg font-semibold">{course.name}</div>
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-[300px,1fr] gap-8 py-8">
+          <div className="space-y-6">
+            <div className="text-2xl font-semibold tracking-tight">
+              {course.name}
+            </div>
 
-        <Suspense
-          fallback={
-            <CoursePageClient
-              course={mapCourse({ course, completedLessonIds: [] })}
-            />
-          }
-        >
-          <SuspenseBoundary course={course} />
-        </Suspense>
+            <Suspense
+              fallback={
+                <CoursePageClient
+                  course={mapCourse({ course, completedLessonIds: [] })}
+                />
+              }
+            >
+              <SuspenseBoundary course={course} />
+            </Suspense>
+          </div>
+
+          <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6">
+            {children}
+          </div>
+        </div>
       </div>
-
-      <div className="py-4">{children}</div>
     </div>
   );
 }
@@ -108,6 +117,9 @@ async function SuspenseBoundary({
 }
 
 async function getCompletedLessonIds(userId: string) {
+  "use cache";
+  cacheTag(getUserLessonCompleteUserTag(userId));
+
   const data = await db.query.UserLessonCompleteTable.findMany({
     columns: { lessonId: true },
     where: eq(UserLessonCompleteTable.userId, userId),

@@ -1,175 +1,148 @@
--
-
 # 강의 관리 플랫폼
 
-온라인 강의와 수업을 관리하기 위해 Next.js로 구축된 현대적인 웹 애플리케이션입니다.
+온라인 강의와 수업을 관리하기 위한 현대적인 웹 애플리케이션입니다.
 
-## 🚀 기능
+## 📋 시작하기 전에
 
-- 사용자 인증 및 관리 (Clerk 사용)
-- 강의 및 수업 관리
-- 구매 추적 시스템
-- 관리자 대시보드
-- PostgreSQL과 데이터베이스 통합
-- Tailwind CSS로 반응형 UI
-- 사용자 이벤트를 위한 웹훅 통합
+이 프로젝트를 실행하기 위해서는 다음이 필요합니다:
 
-## 🛠️ 기술 스택
+1. Node.js (v18 이상 권장)
+2. PostgreSQL 데이터베이스
+3. Clerk 계정 (인증 서비스)
+4. Stripe 계정 (결제 서비스)
 
-- **프론트엔드**: Next.js, TypeScript, Tailwind CSS
-- **인증**: Clerk
-- **데이터베이스**: PostgreSQL, Drizzle ORM
-- **UI 컴포넌트**: shadcn/ui
-- **스타일링**: Tailwind CSS (New York 스타일 프리셋 사용)
-- **아이콘**: Lucide 아이콘
+## 🚀 빠른 시작 가이드
 
-## 📋 필수 조건
+### 1. 프로젝트 클론 및 설치
 
-- Node.js (최신 LTS 버전 권장)
-- PostgreSQL 데이터베이스
-- 인증을 위한 Clerk 계정
-- 환경 변수 설정이 올바르게 되어 있어야 합니다.
+```bash
+# 1. 프로젝트 클론
+git clone <repository-url>
 
-## 🔧 필요한 환경 변수
+# 2. 프로젝트 디렉토리로 이동
+cd <project-directory>
+
+# 3. 의존성 설치
+npm install
+```
+
+### 2. 환경 변수 설정
+
+1. `.env.example` 파일을 `.env`로 복사합니다:
+
+```bash
+cp .env.example .env
+```
+
+2. `.env` 파일을 열어 다음 정보를 입력합니다:
 
 ```env
 # 데이터베이스 설정
-DB_PASSWORD=          # PostgreSQL 데이터베이스 비밀번호
-DB_USER=              # PostgreSQL 데이터베이스 사용자
-DB_NAME=              # PostgreSQL 데이터베이스 이름
-DB_HOST=              # PostgreSQL 데이터베이스 호스트
+DB_PASSWORD=your_db_password
+DB_USER=your_db_user
+DB_NAME=your_db_name
+DB_HOST=localhost
 
-# Clerk 인증
-CLERK_SECRET_KEY=     # Clerk 대시보드에서 가져온 비밀 키
-CLERK_WEBHOOK_SECRET= # Clerk 대시보드에서 가져온 웹훅 비밀 키
+# Clerk 설정 (https://dashboard.clerk.dev에서 가져오기)
+CLERK_SECRET_KEY=your_clerk_secret_key
+CLERK_WEBHOOK_SECRET=your_clerk_webhook_secret
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 
-# Clerk 공개 변수
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=   # Clerk 대시보드에서 가져온 공개 키
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=       # 로그인 URL (기본값: /sign-in)
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=       # 가입 URL (기본값: /sign-up)
-
-# Stripe 설정
-STRIPE_SECRET_KEY=                    # Stripe 비밀 키
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=   # Stripe 공개 키
-STRIPE_WEBHOOK_SECRET=                # Stripe 웹훅 비밀 키
-
-# Stripe 쿠폰 ID
-STRIPE_PPP_50_COUPON_ID=             # Stripe 50% 할인 쿠폰 ID
-STRIPE_PPP_40_COUPON_ID=             # Stripe 40% 할인 쿠폰 ID
-STRIPE_PPP_30_COUPON_ID=             # Stripe 30% 할인 쿠폰 ID
-STRIPE_PPP_20_COUPON_ID=             # Stripe 20% 할인 쿠폰 ID
-
-# 애플리케이션 URL
-NEXT_PUBLIC_SERVER_URL=               # 서버 URL (기본값: http://localhost:3000)
-
+# Stripe 설정 (https://dashboard.stripe.com에서 가져오기)
+STRIPE_SECRET_KEY=your_stripe_secret_key
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
 ```
 
-## 🚀 시작하기
+### 3. 데이터베이스 설정
 
-### 리포지토리 클론하기
+1. PostgreSQL이 설치되어 있는지 확인합니다.
+2. 다음 명령어로 데이터베이스를 생성합니다:
 
 ```bash
-git clone <repository-url>
+createdb your_db_name
 ```
 
-### 의존성 설치하기
-
-```bash
-npm install
-# 또는
-yarn install
-# 또는
-pnpm install
-```
-
-### 환경 변수 설정하기
-
-`.env.example` 파일을 `.env.local`로 복사한 후
-
-모든 필요한 환경 변수를 입력합니다.
-
-### 데이터베이스 마이그레이션 실행하기
+3. 데이터베이스 마이그레이션을 실행합니다:
 
 ```bash
 npm run db:migrate
-# 또는
-yarn db:migrate
 ```
 
-### 개발 서버 시작하기
+### 4. 개발 서버 실행
 
 ```bash
 npm run dev
-# 또는
-yarn dev
-# 또는
-pnpm dev
 ```
 
-브라우저에서 `http://localhost:3000`을 열어 애플리케이션을 확인할 수 있습니다.
+브라우저에서 `http://localhost:3000`으로 접속하여 애플리케이션을 확인할 수 있습니다.
+
+## 🛠️ 주요 기능
+
+- 🔐 사용자 인증 및 관리
+- 📚 강의 및 수업 관리
+- 💳 결제 시스템
+- 📊 관리자 대시보드
+- 🔄 실시간 업데이트
 
 ## 📁 프로젝트 구조
 
 ```
 src/
-├── app/              # Next.js 앱 라우터 페이지
-├── components/       # 재사용 가능한 UI 컴포넌트
-├── drizzle/          # 데이터베이스 스키마 및 설정
-├── features/         # 기능 기반 코드 조직
-├── lib/              # 유틸리티 함수 및 공통 로직
-└── services/         # 외부 서비스 통합
+├── app/          # 페이지 및 라우팅
+├── components/   # UI 컴포넌트
+├── lib/         # 유틸리티 함수
+├── services/    # 외부 서비스 통합
+└── features/    # 비즈니스 로직
 ```
 
-## 🔄 데이터베이스 관리
+## 🔧 개발 가이드
 
-이 프로젝트는 PostgreSQL과 Drizzle ORM을 사용합니다.
+### 개발 서버 실행
 
-마이그레이션 파일은 `src/drizzle/migrations`에 위치합니다.
+```bash
+npm run dev
+```
 
-스키마 정의는 `src/drizzle/schema`에서 확인할 수 있습니다.
+### 프로덕션 빌드
 
-## 🛡️ 보안
+```bash
+npm run build
+npm start
+```
 
-- 인증은 Clerk를 통해 처리됩니다.
-- Clerk 이벤트에 대한 웹훅 검증은 안전하게 처리됩니다.
-- 데이터베이스 자격 증명은 환경 변수로 관리됩니다.
-- Drizzle ORM을 사용하여 타입 안전한 데이터베이스 작업을 수행합니다.
+### 테스트 실행
 
-## 🧪 개발
+```bash
+npm test
+```
 
-- TypeScript를 사용하여 타입 안전성을 보장합니다.
-- 최신 Next.js 13+ 규칙을 따릅니다.
-- 서버 사이드 렌더링 및 API 라우트를 구현합니다.
-- 성능 최적화를 위한 캐싱 메커니즘을 포함합니다.
+## 📚 기술 스택
 
-## 📚 추가 리소스
-
-- [Next.js 문서](https://nextjs.org/docs)
-- [Clerk 문서](https://clerk.dev/docs)
-- [Drizzle ORM 문서](https://orm.drizzle.team)
-- [Tailwind CSS 문서](https://tailwindcss.com/docs)
+- **프론트엔드**: Next.js, TypeScript, Tailwind CSS
+- **인증**: Clerk
+- **데이터베이스**: PostgreSQL, Drizzle ORM
+- **UI**: shadcn/ui
+- **결제**: Stripe
 
 ## 🤝 기여하기
 
-1. 리포지토리를 포크합니다.
-2. 기능 브랜치를 생성합니다. (`git checkout -b feature/AmazingFeature`)
-3. 변경 사항을 커밋합니다. (`git commit -m 'Add some AmazingFeature'`)
-4. 브랜치를 푸시합니다. (`git push origin feature/AmazingFeature`)
-5. 풀 리퀘스트를 엽니다.
+1. 이슈를 생성하거나 기존 이슈를 확인합니다.
+2. 새로운 브랜치를 생성합니다: `git checkout -b feature/your-feature`
+3. 변경사항을 커밋합니다: `git commit -m 'Add your feature'`
+4. 브랜치를 푸시합니다: `git push origin feature/your-feature`
+5. Pull Request를 생성합니다.
+
+## 📞 도움말
+
+문제가 발생하면 다음을 확인해주세요:
+
+1. 모든 환경 변수가 올바르게 설정되어 있는지
+2. 데이터베이스가 실행 중인지
+3. 필요한 서비스(Clerk, Stripe)가 올바르게 설정되어 있는지
+
+추가적인 도움이 필요하면 이슈를 생성해주세요.
 
 ## 📝 라이선스
 
-이 프로젝트는 MIT 라이선스 하에 제공됩니다. 자세한 내용은 LICENSE 파일을 참조하세요.
-
----
-
-이 `README.md` 파일은 프로젝트에 대한 종합적인 개요를 제공합니다:
-
-- 기능 및 기술 스택
-- 설정 방법
-- 프로젝트 구조
-- 개발 지침
-- 보안 고려사항
-- 기여 지침
-
----
+이 프로젝트는 MIT 라이선스 하에 제공됩니다.

@@ -57,34 +57,44 @@ export function CoursePageClient({
     <Accordion
       type="multiple"
       defaultValue={defaultValue?.id ? [defaultValue.id] : undefined}
+      className="space-y-2"
     >
       {course.courseSections.map((section) => (
-        <AccordionItem key={section.id} value={section.id}>
-          <AccordionTrigger className="text-lg">
+        <AccordionItem
+          key={section.id}
+          value={section.id}
+          className="border-none bg-white/5 backdrop-blur-sm rounded-xl overflow-hidden transition-all duration-300 hover:bg-white/10"
+        >
+          <AccordionTrigger className="text-lg font-medium px-4 py-3 hover:no-underline">
             {section.name}
           </AccordionTrigger>
 
-          <AccordionContent className="flex flex-col gap-1">
-            {section.lessons.map((lesson) => (
-              <Button
-                asChild
-                variant="ghost"
-                key={lesson.id}
-                className={cn(
-                  "justify-start",
-                  lesson.id === lessonId &&
-                    "bg-accent/75 text-accent-foreground"
-                )}
-              >
-                <Link href={`/courses/${course.id}/lessons/${lesson.id}`}>
-                  <VideoIcon />
-                  {lesson.name}
-                  {lesson.isComplete && (
-                    <CheckCircle2Icon className="ml-auto" />
+          <AccordionContent className="px-4 pb-3">
+            <div className="space-y-1">
+              {section.lessons.map((lesson) => (
+                <Button
+                  variant="ghost"
+                  key={lesson.id}
+                  className={cn(
+                    "w-full justify-start px-3 py-2 rounded-lg transition-all duration-200",
+                    lesson.id === lessonId
+                      ? "bg-white/20 text-white"
+                      : "hover:bg-white/10"
                   )}
-                </Link>
-              </Button>
-            ))}
+                >
+                  <Link
+                    href={`/courses/${course.id}/lessons/${lesson.id}`}
+                    className="flex items-center w-full"
+                  >
+                    <VideoIcon className="w-4 h-4 mr-2 text-white/70" />
+                    <span className="text-white/90">{lesson.name}</span>
+                    {lesson.isComplete && (
+                      <CheckCircle2Icon className="ml-auto w-4 h-4 text-green-400" />
+                    )}
+                  </Link>
+                </Button>
+              ))}
+            </div>
           </AccordionContent>
         </AccordionItem>
       ))}
