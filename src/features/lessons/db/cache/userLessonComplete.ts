@@ -19,7 +19,7 @@ export function getUserLessonCompleteUserTag(userId: string) {
   return getUserTag("userLessonComplete", userId);
 }
 
-export function revalidateLessonCache({
+export function revalidateUserLessonCompleteCache({
   lessonId,
   userId,
 }: {

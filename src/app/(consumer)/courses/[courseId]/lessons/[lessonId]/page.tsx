@@ -13,19 +13,15 @@ import {
   wherePublicLessons,
 } from "@/features/lessons/permissions/lessons";
 import { getCurrentUser } from "@/services/clerk";
-import { and, eq, is } from "drizzle-orm";
-import {
-  CheckSquare2,
-  CheckSquare2Icon,
-  LockIcon,
-  XSquareIcon,
-} from "lucide-react";
+import { and, eq } from "drizzle-orm";
+import { CheckSquare2Icon, LockIcon, XSquareIcon } from "lucide-react";
 import Link from "next/link";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { notFound } from "next/navigation";
-import { cache, Suspense } from "react";
+import { Suspense } from "react";
 import { ActionButton } from "@/components/ActionButton";
 import { canUpdateUserLessonCompleteStatus } from "@/features/lessons/permissions/userLessonComplete";
+import { updateLessonCompleteStatus } from "@/features/lessons/actions/userLessonComplete";
 
 export default async function LessonPage({
   params,
@@ -35,7 +31,7 @@ export default async function LessonPage({
   const { courseId, lessonId } = await params;
   const lesson = await getLesson(lessonId);
 
-  if (!lesson) {
+  if (lesson == null) {
     return notFound();
   }
 
@@ -83,16 +79,16 @@ async function SuspenseBoundary({
   const isLessonComplete =
     userId == null
       ? false
-      : await getIsLessonComplete({
-          lessonId: lesson.id,
-          userId,
-        });
+      : await getIsLessonComplete({ lessonId: lesson.id, userId });
   const canView = await canViewLesson({ role, userId }, lesson);
   const canUpdateCompletionStatus = await canUpdateUserLessonCompleteStatus(
-    {
-      userId,
-    },
+    { userId },
     lesson.id
+  );
+
+  console.log(
+    isLessonComplete,
+    "isLessonCompleteisLessonCompleteisLessonComplete"
   );
 
   return (
@@ -122,20 +118,28 @@ async function SuspenseBoundary({
                 이전
               </Link>
             </Button>
-
-            <ActionButton action={null} variant="outline">
-              <div className="flex gap-2 items-center text-black font-semibold">
-                {isLessonComplete ? (
-                  <>
-                    <CheckSquare2Icon /> 미완료
-                  </>
-                ) : (
-                  <>
-                    <XSquareIcon /> 완료
-                  </>
+            {canUpdateCompletionStatus && (
+              <ActionButton
+                action={updateLessonCompleteStatus.bind(
+                  null,
+                  lesson.id,
+                  !isLessonComplete
                 )}
-              </div>
-            </ActionButton>
+                variant="outline"
+              >
+                <div className="flex gap-2 items-center text-black font-semibold">
+                  {isLessonComplete ? (
+                    <>
+                      <CheckSquare2Icon /> 미완료
+                    </>
+                  ) : (
+                    <>
+                      <XSquareIcon /> 완료
+                    </>
+                  )}
+                </div>
+              </ActionButton>
+            )}
             <Button variant="outline" asChild>
               <Link className="text-black font-semibold" href="/">
                 다음
@@ -163,7 +167,7 @@ async function getIsLessonComplete({
   "use cache";
   cacheTag(getUserLessonCompleteIdTag({ userId, lessonId }));
 
-  const data = db.query.UserLessonCompleteTable.findFirst({
+  const data = await db.query.UserLessonCompleteTable.findFirst({
     where: and(
       eq(UserLessonCompleteTable.userId, userId),
       eq(UserLessonCompleteTable.lessonId, lessonId)
@@ -177,7 +181,7 @@ async function getLesson(id: string) {
   "use cache";
   cacheTag(getLessonIdTag(id));
 
-  return db.query.LessonTable.findFirst({
+  return await db.query.LessonTable.findFirst({
     columns: {
       id: true,
       youtubeVideoId: true,

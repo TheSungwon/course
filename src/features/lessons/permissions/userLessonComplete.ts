@@ -23,9 +23,7 @@ export async function canUpdateUserLessonCompleteStatus(
   cacheTag(getUserCourseAccessUserTag(user.userId));
 
   const [courseAccess] = await db
-    .select({
-      courseId: CourseTable.id,
-    })
+    .select({ courseId: CourseTable.id })
     .from(UserCourseAccessTable)
     .innerJoin(CourseTable, eq(CourseTable.id, UserCourseAccessTable.courseId))
 
@@ -51,5 +49,5 @@ export async function canUpdateUserLessonCompleteStatus(
     )
     .limit(1);
 
-  return courseAccess !== null;
+  return courseAccess != null;
 }
