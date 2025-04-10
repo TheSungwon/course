@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { db } from "@/drizzle/db";
 import {
+  CourseSectionTable,
   LessonStatus,
   LessonTable,
   UserLessonCompleteTable,
@@ -13,15 +14,16 @@ import {
   wherePublicLessons,
 } from "@/features/lessons/permissions/lessons";
 import { getCurrentUser } from "@/services/clerk";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, lt } from "drizzle-orm";
 import { CheckSquare2Icon, LockIcon, XSquareIcon } from "lucide-react";
 import Link from "next/link";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
+import { ReactNode, Suspense } from "react";
 import { ActionButton } from "@/components/ActionButton";
 import { canUpdateUserLessonCompleteStatus } from "@/features/lessons/permissions/userLessonComplete";
 import { updateLessonCompleteStatus } from "@/features/lessons/actions/userLessonComplete";
+import { wherePublicCourseSections } from "@/features/courseSections/permissions/sections";
 
 export default async function LessonPage({
   params,
@@ -72,6 +74,7 @@ async function SuspenseBoundary({
     description: string | null;
     status: LessonStatus;
     sectionId: string;
+    order: number;
   };
   courseId: string;
 }) {
@@ -86,10 +89,9 @@ async function SuspenseBoundary({
     lesson.id
   );
 
-  console.log(
-    isLessonComplete,
-    "isLessonCompleteisLessonCompleteisLessonComplete"
-  );
+  const previousLesson = await getPreviousLesson(lesson);
+
+  console.log(previousLesson, "previousLessonpreviousLesson");
 
   return (
     <div className="my-4 flex flex-col gap-4">
@@ -113,11 +115,9 @@ async function SuspenseBoundary({
         <div className="flex justify-between items-start gap-4">
           <h1 className="text-2xl font-semibold">{lesson.name}</h1>
           <div className="flex gap-2 justify-end">
-            <Button variant="outline" asChild>
-              <Link className="text-black font-semibold" href="/">
-                이전
-              </Link>
-            </Button>
+            <ToLessonButton courseId={courseId} lessonFunc={getPreviousLesson}>
+              이전
+            </ToLessonButton>
             {canUpdateCompletionStatus && (
               <ActionButton
                 action={updateLessonCompleteStatus.bind(
@@ -130,11 +130,11 @@ async function SuspenseBoundary({
                 <div className="flex gap-2 items-center text-black font-semibold">
                   {isLessonComplete ? (
                     <>
-                      <CheckSquare2Icon /> 미완료
+                      <CheckSquare2Icon /> 완료
                     </>
                   ) : (
                     <>
-                      <XSquareIcon /> 완료
+                      <XSquareIcon /> 미완료
                     </>
                   )}
                 </div>
@@ -189,7 +189,79 @@ async function getLesson(id: string) {
       description: true,
       status: true,
       sectionId: true,
+      order: true,
     },
     where: and(eq(LessonTable.id, id), wherePublicLessons),
   });
+}
+
+async function getPreviousLesson(lesson: {
+  id: string;
+  sectionId: string;
+  order: number;
+}) {
+  let previousLesson = await db.query.LessonTable.findFirst({
+    where: and(
+      lt(LessonTable.order, lesson.order),
+      eq(LessonTable.sectionId, lesson.sectionId),
+      wherePublicLessons
+    ),
+    orderBy: desc(LessonTable.order),
+    columns: { id: true },
+  });
+
+  if (previousLesson == null) {
+    const section = await db.query.CourseSectionTable.findFirst({
+      where: eq(CourseSectionTable.id, lesson.sectionId),
+      columns: { order: true, courseId: true },
+    });
+
+    if (section == null) return;
+
+    const previousSection = await db.query.CourseSectionTable.findFirst({
+      where: and(
+        lt(CourseSectionTable.order, section?.order),
+        eq(CourseSectionTable.courseId, section?.courseId),
+        wherePublicCourseSections
+      ),
+      orderBy: desc(CourseSectionTable.order),
+      columns: { id: true },
+    });
+
+    if (previousSection == null) return;
+
+    previousLesson = await db.query.LessonTable.findFirst({
+      where: and(
+        eq(LessonTable.sectionId, previousSection.id),
+        wherePublicLessons
+      ),
+      orderBy: desc(LessonTable.order),
+      columns: { id: true },
+    });
+  }
+
+  return previousLesson;
+}
+
+async function ToLessonButton({
+  children,
+  courseId,
+  lessonFunc,
+}: {
+  children: ReactNode;
+  courseId: string;
+  lessonFunc: () => Promise<{ lessonId: string } | undefined>;
+}) {
+  const toLesson = await lessonFunc();
+
+  return (
+    <Button variant="outline" asChild>
+      <Link
+        className="text-black font-semibold"
+        href={`/courses/${courseId}/lesson/${toLesson?.lessonId}`}
+      >
+        {children}
+      </Link>
+    </Button>
+  );
 }
